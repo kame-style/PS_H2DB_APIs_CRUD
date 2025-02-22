@@ -1,4 +1,4 @@
-package Config;
+package PS_project.API_dummy_data.config;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;

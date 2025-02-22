@@ -1,8 +1,13 @@
-package Model;
+package PS_project.API_dummy_data.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
 @Entity
@@ -11,6 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Users {
     @Id
     private Long id;
@@ -27,6 +33,17 @@ public class Users {
     private String phone;
     private String username;
     private String password;
+
+    private String image;
+    private String bloodGroup;
+
+    private Float weight;
+    private String eyeColor;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "hair_id")
+    private Hair hair;
+    private String ip;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
@@ -46,4 +63,10 @@ public class Users {
     private String ein;
     private String ssn;
     private String userAgent;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "crypto_id")
+    private Crypto crypto;
+
+    private String role;
     }

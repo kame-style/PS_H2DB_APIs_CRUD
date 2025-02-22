@@ -1,4 +1,4 @@
-package dto;
+package PS_project.API_dummy_data.dto;
 
 
 import lombok.*;

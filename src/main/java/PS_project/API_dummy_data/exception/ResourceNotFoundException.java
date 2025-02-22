@@ -1,4 +1,4 @@
-package exception;
+package PS_project.API_dummy_data.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

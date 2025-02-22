@@ -1,19 +1,20 @@
-package Service;
+package PS_project.API_dummy_data.service;
 
-
-import Model.Users;
-import Repository.UserRepository;
-import dto.UserDTO;
-import dto.UserResponse;
-import exception.ResourceNotFoundException;
+import PS_project.API_dummy_data.dto.UserDTO;
+import PS_project.API_dummy_data.dto.UserResponse;
+import PS_project.API_dummy_data.exception.ResourceNotFoundException;
+import PS_project.API_dummy_data.model.Users;
+import PS_project.API_dummy_data.repository.UserRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -24,8 +25,11 @@ import java.util.List;
 @RequiredArgsConstructor
 //@Slf4j
 public class UserService {
-    private final UserRepository userRepository;
-    private final RestTemplate restTemplate;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private RestTemplate restTemplate;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
@@ -33,20 +37,22 @@ public class UserService {
     private String usersApiUrl;
 
     @PostConstruct
-    @Scheduled(cron = "${data.refresh.cron}")
+    //@Scheduled(cron = "${data.refresh.cron}")
     //@Retryable(value = {RestClientException.class}, maxAttempts = 3, backoff = @Backoff(delay = 1000))
     public void loadUsersData() {
         log.info("Loading users data from external API");
         try {
-            UserResponse response = restTemplate.getForObject(usersApiUrl, UserResponse.class);
-            if (response != null && response.getUsers() != null) {
+            ResponseEntity<String> response = restTemplate.getForEntity(usersApiUrl, String.class);
+            if (response != null) {
+            UserResponse usersResponse = objectMapper.readValue(response.getBody(), UserResponse.class);
                 userRepository.deleteAll();
-                userRepository.saveAll(response.getUsers().stream()
+                userRepository.saveAll(usersResponse.getUsers().stream()
                         .map(this::convertToEntity)
                         .toList());
-                log.info("Successfully loaded {} users", response.getUsers().size());
-            } else {
-                log.warn("No users found in the API response");
+                log.info("Successfully loaded {} users", usersResponse.getUsers().size());
+            }
+            else{
+                log.info("API response returned null!!");
             }
         } catch (Exception e) {
             log.error("Failed to load users data", e);
@@ -65,7 +71,7 @@ public class UserService {
                 .lastName(userDto.getLastName())
                 .maidenName(userDto.getMaidenName())
                 .age(userDto.getAge())
-                .birthDate(userDto.getBirthDate())
+                .birthDate(userDto.getBirthDateAsLocalDate())
                 .gender(userDto.getGender())
                 .email(userDto.getEmail())
                 .phone(userDto.getPhone())
@@ -79,6 +85,12 @@ public class UserService {
                 .ein(userDto.getEin())
                 .ssn(userDto.getSsn())
                 .userAgent(userDto.getUserAgent())
+                .role(userDto.getRole())
+                .image(userDto.getImage())
+                .eyeColor(userDto.getEyeColor())
+                .hair(userDto.getHair())
+                .ip(userDto.getIp())
+                .crypto(userDto.getCrypto())
                 .build();
     }
 
@@ -87,7 +99,7 @@ public class UserService {
     }
 
     public List<Users> getUsersByRole(String role) {
-        return userRepository.findByCompanyDepartment(role);
+        return userRepository.findByRole(role);
     }
 
     public List<Users> getUsersSortedByAge(String direction) {
@@ -105,3 +117,4 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with SSN: " + ssn, HttpStatus.NOT_FOUND));
     }
 }
+

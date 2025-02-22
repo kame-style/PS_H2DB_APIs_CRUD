@@ -1,4 +1,4 @@
-package exception;
+package PS_project.API_dummy_data.exception;
 
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
