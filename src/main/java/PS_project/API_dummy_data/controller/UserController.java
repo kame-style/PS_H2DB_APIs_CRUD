@@ -21,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "User Management API", description = "APIs for managing users")
+@CrossOrigin(origins = "http://localhost:5173")
 public class UserController {
 
     @Autowired
