@@ -23,7 +23,6 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-//@Slf4j
 public class UserService {
     @Autowired
     private UserRepository userRepository;
@@ -37,13 +36,11 @@ public class UserService {
     private String usersApiUrl;
 
     @PostConstruct
-    //@Scheduled(cron = "${data.refresh.cron}")
-    //@Retryable(value = {RestClientException.class}, maxAttempts = 3, backoff = @Backoff(delay = 1000))
     public void loadUsersData() {
         log.info("Loading users data from external API");
         try {
             ResponseEntity<String> response = restTemplate.getForEntity(usersApiUrl, String.class);
-            if (response != null) {
+            if (response.getBody() != null) {
             UserResponse usersResponse = objectMapper.readValue(response.getBody(), UserResponse.class);
                 userRepository.deleteAll();
                 userRepository.saveAll(usersResponse.getUsers().stream()

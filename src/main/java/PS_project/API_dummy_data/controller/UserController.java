@@ -27,9 +27,6 @@ public class UserController {
     @Autowired
     private final UserService userService;
 
-    @GetMapping("/home")
-    public String home() {return "Welcome to application";}
-
     @PostMapping("/load")
     @Operation(summary = "Load users from external API", description = "Fetches users from the external API and loads them into the H2 database")
     @ApiResponse(responseCode = "200", description = "Users loaded successfully")
@@ -38,7 +35,7 @@ public class UserController {
         log.info("Request received to load users data");
         userService.loadUsersData();
         return ResponseEntity.ok("Users data loaded successfully");
-    } //tested
+    }
 
     @GetMapping
     @Operation(summary = "Get all users", description = "Returns a list of all users")
@@ -46,7 +43,7 @@ public class UserController {
     public ResponseEntity<List<Users>> getAllUsers() {
         log.info("Request received to get all users");
         return ResponseEntity.ok(userService.getAllUsers());
-    }  //tested
+    }
 
     @GetMapping("/role/{role}")
     @Operation(summary = "Get users by role", description = "Returns a list of users with the specified role")
@@ -57,7 +54,7 @@ public class UserController {
             @NotBlank String role) {
         log.info("Request received to get users by role: {}", role);
         return ResponseEntity.ok(userService.getUsersByRole(role));
-    } //tested
+    }
 
     @GetMapping("/sort")
     @Operation(summary = "Get users sorted by age", description = "Returns a list of users sorted by age in ascending or descending order")
@@ -70,7 +67,7 @@ public class UserController {
     {
         log.info("Request received to get users sorted by age in {} order", direction);
         return ResponseEntity.ok(userService.getUsersSortedByAge(direction));
-    } //tested
+    }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get user by ID", description = "Returns a user with the specified ID")
@@ -81,7 +78,7 @@ public class UserController {
             @PathVariable Long id) {
         log.info("Request received to get user by ID: {}", id);
         return ResponseEntity.ok(userService.getUserById(id));
-    } //tested
+    }
 
     @GetMapping("/ssn/{ssn}")
     @Operation(summary = "Get user by SSN", description = "Returns a user with the specified SSN")
@@ -94,5 +91,5 @@ public class UserController {
             String ssn) {
         log.info("Request received to get user by SSN: {}", ssn);
         return ResponseEntity.ok(userService.getUserBySsn(ssn));
-    } //tested
+    }
 }
